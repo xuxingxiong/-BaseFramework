@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PayMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		t_order_pay
+	</sql>
+	<sql id="tableName_Order">
+		t_order_pay
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+	INSERT INTO `<include refid="tableName"></include>`
+            (`service`,
+             `version`,
+             `charset`,
+             `sign_type`,
+             `status`,
+             `message`,
+             `result_code`,
+             `mch_id`,
+             `device_info`,
+             `nonce_str`,
+             `err_code`,
+             `err_msg`,
+             `sign`,
+             `openid`,
+             `trade_type`,
+             `is_subscribe`,
+             `pay_result`,
+             `pay_info`,
+             `transaction_id`,
+             `out_transaction_id`,
+             `sub_is_subscribe`,
+             `sub_appid`,
+             `sub_openid`,
+             `out_trade_no`,
+             `total_fee`,
+             `coupon_fee`,
+             `fee_type`,
+             `attach`,
+             `bank_type`,
+             `bank_billno`,
+             `time_end`)
+VALUES (#{service},
+        #{version},
+        #{charset},
+        #{sign_type},
+        #{status},
+        #{message},
+        #{result_code},
+        #{mch_id},
+        #{device_info},
+        #{nonce_str},
+        #{err_code},
+        #{err_msg},
+        #{sign},
+        #{openid},
+        #{trade_type},
+        #{is_subscribe},
+        #{pay_result},
+        #{pay_info},
+        #{transaction_id},
+        #{out_transaction_id},
+        #{sub_is_subscribe},
+        #{sub_appid},
+        #{sub_openid},
+        #{out_trade_no},
+        #{total_fee},
+        #{coupon_fee},
+        #{fee_type},
+        #{attach},
+        #{bank_type},
+        #{bank_billno},
+        #{time_end});
+	</insert>
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		`service`,
+             `version`,
+             `charset`,
+             `sign_type`,
+             `status`,
+             `message`,
+             `result_code`,
+             `mch_id`,
+             `device_info`,
+             `nonce_str`,
+             `err_code`,
+             `err_msg`,
+             `sign`,
+             `openid`,
+             `trade_type`,
+             `is_subscribe`,
+             `pay_result`,
+             `pay_info`,
+             `transaction_id`,
+             `out_transaction_id`,
+             `sub_is_subscribe`,
+             `sub_appid`,
+             `sub_openid`,
+             `out_trade_no`,
+             `total_fee`,
+             `coupon_fee`,
+             `fee_type`,
+             `attach`,
+             `bank_type`,
+             `bank_billno`,
+             `time_end`
+		from 
+		<include refid="tableName"></include>
+		where out_trade_no=#{out_trade_no} AND pay_result='0'
+		ORDER BY time_end desc
+	</select>
+	<!-- 修改 -->
+	<update id="editOrder" parameterType="pd">
+		update
+		<include refid="tableName_Order"></include>
+		set 
+			STATUS=#{pay_result}
+		where 
+		ID = #{out_trade_no}
+	</update>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

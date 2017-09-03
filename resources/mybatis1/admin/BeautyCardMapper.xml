@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BeautyCardMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		M_CARD
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		ID,	
+		CADR_NAME,	
+		MIN_CHARGE,	
+		SERVICE_CHARGE,	
+		DISCUT,	
+		CARE_TIMES,	
+		CARE_PERIOD,	
+		USE_LIMIT,	
+		USE_COMMENT,	
+		DATE_FORMAT(SALE_STARTTIME,'%Y-%m-%d') SALE_STARTTIME,
+		DATE_FORMAT(SALE_ENDTIME,'%Y-%m-%d') SALE_ENDTIME,
+		IMAGE_ID,	
+		IS_DEL,	
+		CREATE_TIME,	
+		MODIFY_TIME,	
+		CREATER,	
+		UPDATER
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ID},	
+		#{CADR_NAME},	
+		#{MIN_CHARGE},	
+		#{SERVICE_CHARGE},	
+		#{DISCUT},	
+		#{CARE_TIMES},	
+		#{CARE_PERIOD},	
+		#{USE_LIMIT},	
+		#{USE_COMMENT},	
+		#{SALE_STARTTIME},	
+		#{SALE_ENDTIME},	
+		#{IMAGE_ID},	
+		#{IS_DEL},	
+		#{CREATE_TIME},	
+		#{MODIFY_TIME},	
+		#{CREATER},	
+		#{UPDATER}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+			ID,	
+			CADR_NAME,	
+			MIN_CHARGE,	
+			SERVICE_CHARGE,	
+			DISCUT,	
+			CARE_TIMES,	
+			CARE_PERIOD,	
+			USE_LIMIT,	
+			USE_COMMENT,	
+			SALE_STARTTIME,
+			SALE_ENDTIME,
+			IMAGE_ID,	
+			IS_DEL,	
+			CREATE_TIME,	
+			MODIFY_TIME,	
+			CREATER,	
+			UPDATER
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			ID = #{ID},
+			CADR_NAME = #{CADR_NAME},
+			MIN_CHARGE = #{MIN_CHARGE},
+			SERVICE_CHARGE = #{SERVICE_CHARGE},
+			DISCUT = #{DISCUT},
+			CARE_TIMES = #{CARE_TIMES},
+			CARE_PERIOD = #{CARE_PERIOD},
+			USE_LIMIT = #{USE_LIMIT},
+			USE_COMMENT = #{USE_COMMENT},
+			SALE_STARTTIME = #{SALE_STARTTIME},
+			SALE_ENDTIME = #{SALE_ENDTIME},
+			IMAGE_ID = #{IMAGE_ID},
+			MODIFY_TIME = #{MODIFY_TIME},	
+			UPDATER = #{UPDATER}
+		where 
+		ID = #{ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					CADR_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				)
+		</if>
+		<if test="pd.lastEnd!= null and pd.lastEnd != ''"><!-- 关键词检索 -->
+			and DATE_FORMAT( SALE_ENDTIME, '%Y-%m-%d') &lt;= #{pd.lastEnd}
+		</if>
+		<if test="pd.lastStart!= null and pd.lastStart != ''"><!-- 关键词检索 -->
+			and DATE_FORMAT( SALE_STARTTIME, '%Y-%m-%d') &gt;= #{pd.lastStart}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+
+</mapper>

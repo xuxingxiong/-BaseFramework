@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RemindMapper">
+	
+	<!--表名 -->
+	<sql id="remindtable">
+		T_REMIND
+	</sql>
+	<sql id="usertable">
+		CUSTOMER
+	</sql>
+	<sql id="caretable">
+		CARE_HISTORY
+	</sql>
+	<sql id="careordertable">
+		CARE_ORDER
+	</sql>
+	<!-- 字段 -->
+	<sql id="RemindDays">
+		1
+	</sql>
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="remindtable"></include>
+		where 
+		<![CDATA[		DATEDIFF(DELETE_TIME,now())<0]]>
+	</delete>
+	
+<!-- 新增-->
+	<insert id="addorder" parameterType="pd">
+		INSERT INTO <include refid="remindtable"></include>
+		(
+ 			REMIND_TYPE
+		   ,ID
+		   ,TITLE
+		   ,MESSAGE
+		   ,ISCLOSE
+		   ,CREATE_TIME
+		   ,DELETE_TIME
+		   ,PHONE
+		 )
+		SELECT 
+		 '3' AS REMIND_TYPE 
+		 ,UE.ID AS ID
+		 ,'来店提醒' AS TITLE
+		 ,CONCAT(CE.CUSTOMER_NAME,IF(UE.SEX=1,"先生",IF(UE.SEX=2,"女士","顾客")), '即将来店（',date_format(CARE_DATE_START,'%Y-%m-%d'),'）') AS  MESSAGE
+		 ,'0' AS ISCLOSE
+		 ,NOW() AS CREATE_TIME
+		 ,CE.CARE_DATE_START AS DELETE_TIME
+		 ,UE.MOBILE_PHONE AS PHONE
+		FROM <include refid="careordertable"></include> CE
+		INNER JOIN <include refid="usertable"></include> UE
+		ON UE.ID = CE.CUSTOMER_ID
+		<![CDATA[		  		WHERE DATEDIFF(CE.CARE_DATE_START,NOW())>=0 AND  DATEDIFF(CE.CARE_DATE_START,NOW())<=]]> <include refid="RemindDays"></include>
+		AND UE.ID NOT IN (SELECT ID FROM T_REMIND WHERE REMIND_TYPE='3')
+		</insert>
+		
+	<!-- 新增-->
+	<insert id="addbirthday" parameterType="pd">
+		INSERT INTO <include refid="remindtable"></include>
+		(
+ 			REMIND_TYPE
+		   ,ID
+		   ,TITLE
+		   ,MESSAGE
+		   ,ISCLOSE
+		   ,CREATE_TIME
+		   ,DELETE_TIME
+		   ,PHONE
+		 )
+		 SELECT 
+		 '1' AS REMIND_TYPE 
+		 ,ID AS ID
+		 ,'生日提醒' AS TITLE
+		 ,CONCAT(USER_NAME,if(SEX=1,"先生","女士"), '的生日即将来临（',date_format(BIRTHDAY,'%m-%d'),'）') AS  MESSAGE
+		 ,'0' AS ISCLOSE
+		 ,NOW() AS CREATE_TIME
+		 ,str_to_date(CONCAT(date_format(now(),'%Y'),'-', date_format(BIRTHDAY,'%m-%d'),' 00:00:00'),'%Y-%m-%d %H:%i:%S') AS DELETE_TIME
+		 ,MOBILE_PHONE AS PHONE
+		 FROM <include refid="usertable"></include>
+<![CDATA[		  		 WHERE TYPE='1' AND DATEDIFF(STR_TO_DATE(CONCAT(DATE_FORMAT(NOW(),'%Y'),'-', DATE_FORMAT(BIRTHDAY,'%m-%d')),'%Y-%m-%d'),NOW()) >= 0 AND DATEDIFF(str_to_date(CONCAT(date_format(now(),'%Y'),'-', date_format(BIRTHDAY,'%m-%d')),'%Y-%m-%d'),now()) <=]]> <include refid="RemindDays"></include> AND ID NOT IN (SELECT ID FROM T_REMIND WHERE REMIND_TYPE='1')
+	</insert>
+	
+	
+	
+	<!-- 新增 -->
+	<insert id="addcareday" parameterType="pd">
+	INSERT INTO <include refid="remindtable"></include>
+		(
+ 			REMIND_TYPE
+		   ,ID
+		   ,TITLE
+		   ,MESSAGE
+		   ,ISCLOSE
+		   ,CREATE_TIME
+		   ,DELETE_TIME
+		   ,PHONE
+		 )
+		SELECT 
+		 '2' AS REMIND_TYPE 
+		 ,UE.ID AS ID
+		 ,'护肤提醒' AS TITLE
+		 ,CONCAT(UE.USER_NAME,if(UE.SEX=1,"先生","女士"), '下次护肤时间即将来临（',date_format(ADDDATE(CE.LASTDATE,UE.CARE_RATE),'%Y-%m-%d'),'）') AS  MESSAGE
+		 ,'0' AS ISCLOSE
+		 ,NOW() AS CREATE_TIME
+		 ,ADDDATE(CE.LASTDATE,UE.CARE_RATE) AS DELETE_TIME
+		 ,UE.MOBILE_PHONE AS PHONE
+		FROM <include refid="usertable"></include> UE
+		INNER JOIN (
+		SELECT MAX(CARE_DATE_START) LASTDATE,CUSTOMER_ID FROM <include refid="caretable"></include> GROUP BY CUSTOMER_ID
+		) CE
+		ON UE.ID = CE.CUSTOMER_ID AND UE.TYPE='1'
+		<![CDATA[		  		WHERE DATEDIFF(ADDDATE(CE.LASTDATE,UE.CARE_RATE),NOW())>=0 AND DATEDIFF(ADDDATE(CE.LASTDATE,UE.CARE_RATE),NOW())<=]]> <include refid="RemindDays"></include>
+		AND ID NOT IN (SELECT ID FROM T_REMIND WHERE REMIND_TYPE='2')
+	</insert>
+	<select id="getremind" parameterType="pd" resultType="pd">
+		SELECT REMIND_TYPE
+		   ,ID
+		   ,TITLE
+		   ,MESSAGE
+		   ,ISCLOSE
+		   ,CREATE_TIME
+		   ,DELETE_TIME 
+		   ,PHONE FROM <include refid="remindtable"></include> WHERE ISCLOSE='0'
+	</select>
+	<update id="closeRemind"  parameterType="pd">
+		UPDATE <include refid="remindtable"></include> SET ISCLOSE='1' WHERE ID = #{USERID} AND REMIND_TYPE = #{REMIND_TYPE} 
+	</update>
+	<!-- fh313596790qq(青苔) -->
+</mapper>

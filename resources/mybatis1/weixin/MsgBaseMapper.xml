@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.weixin.mapper.MsgBaseDao">
+
+	<select id="listForPage" parameterType="com.weixin.entity.MsgBase" resultType="com.weixin.entity.MsgBase">
+		SELECT * FROM t_wxcms_msg_base 
+		<trim prefix="where" prefixOverrides="and|or">
+	        1=1 
+			<if test="msgtype != null and msgtype != '' ">
+			    AND  MSGTYPE = #{msgtype}
+			</if>
+		</trim>	 
+		ORDER BY ID
+	</select>
+
+	<select id="getById" parameterType="java.lang.String" resultType="com.weixin.entity.MsgBase">
+		SELECT * FROM t_wxcms_msg_base WHERE ID = #{id}
+	</select>
+	
+	<select id="getMsgTextByBaseId" parameterType="java.lang.String" resultType="com.weixin.entity.MsgText">
+		SELECT t.* FROM t_wxcms_msg_text t , t_wxcms_msg_base b
+		WHERE t.base_id = b.id
+		AND b.id = #{id}
+	</select>
+	
+	<select id="getMsgTextBySubscribe" resultType="com.weixin.entity.MsgText">
+		SELECT t.* FROM t_wxcms_msg_text t , t_wxcms_msg_base b
+		WHERE t.base_id = b.id
+		AND b.inputcode = 'subscribe'
+	</select>
+	
+	<select id="getMsgTextByInputCode" resultType="com.weixin.entity.MsgText">
+		SELECT t.* FROM t_wxcms_msg_text t , t_wxcms_msg_base b
+		WHERE t.base_id = b.id
+		AND b.inputcode = #{inputcode}
+	</select>
+	
+	<select id="listMsgNewsByBaseId" resultType="com.weixin.entity.MsgNews">
+		SELECT t.* FROM t_wxcms_msg_news t , t_wxcms_msg_base b
+		WHERE t.base_id = b.id
+		AND b.id in 
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+		 #{item}  
+		</foreach>  
+	</select>
+
+	<insert id="add" parameterType="com.weixin.entity.MsgBase" flushCache="true" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_wxcms_msg_base ( MSGTYPE,INPUTCODE,RULE,ENABLE,READCOUNT,FAVOURCOUNT,CREATETIME )  VALUES ( #{msgtype},#{inputcode},#{rule},#{enable},#{readcount},#{favourcount},#{createtime} ) 
+	</insert>
+
+	<update id="update" parameterType="com.weixin.entity.MsgBase" flushCache="true">
+		UPDATE t_wxcms_msg_base SET MSGTYPE = #{msgtype},INPUTCODE = #{inputcode},RULE = #{rule},ENABLE = #{enable},READCOUNT = #{readcount},FAVOURCOUNT = #{favourcount},CREATETIME = #{createtime} WHERE ID = #{id} 
+	</update>
+	
+	<update id="updateInputcode" parameterType="com.weixin.entity.MsgBase" flushCache="true">
+		UPDATE t_wxcms_msg_base SET INPUTCODE = #{inputcode} WHERE ID = #{id} 
+	</update>
+
+	<delete id="delete" parameterType="com.weixin.entity.MsgBase" >
+		DELETE FROM t_wxcms_msg_base WHERE ID = #{id}
+	</delete>
+
+</mapper>

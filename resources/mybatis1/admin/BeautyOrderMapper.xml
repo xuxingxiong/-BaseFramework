@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BeautyOrderMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		T_ORDER
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		ID,	
+		TO_ID,	
+		TO_NAME,	
+		TO_MOBILE,	
+		TO_WECHAT,	
+		TO_QQ,	
+		TO_ADDRESS,	
+		TAKYUBIN_FEE,	
+		PROFIT,	
+		STAFF,	
+		SALE_TIME,	
+		SHOP_ID,	
+		SHOP_NAME,	
+		STATUS,	
+		PAY_TYPE,	
+		PAY_CARD_NO,	
+		CREATE_TIME,	
+		MODIFY_TIME,	
+		CREATER,	
+		UPDATER
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ID},	
+		#{TO_ID},	
+		#{TO_NAME},	
+		#{TO_MOBILE},	
+		#{TO_WECHAT},	
+		#{TO_QQ},	
+		#{TO_ADDRESS},	
+		#{TAKYUBIN_FEE},	
+		#{PROFIT},	
+		#{STAFF},	
+		#{SALE_TIME},	
+		#{SHOP_ID},	
+		#{SHOP_NAME},	
+		#{STATUS},	
+		#{PAY_TYPE},	
+		#{PAY_CARD_NO},	
+		#{CREATE_TIME},	
+		#{MODIFY_TIME},	
+		#{CREATER},	
+		#{UPDATER}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			TO_ID = #{TO_ID},
+			TO_NAME = #{TO_NAME},
+			TO_MOBILE = #{TO_MOBILE},
+			TO_WECHAT = #{TO_WECHAT},
+			TO_QQ = #{TO_QQ},
+			TO_ADDRESS = #{TO_ADDRESS},
+			TAKYUBIN_FEE = #{TAKYUBIN_FEE},
+			STAFF = #{STAFF},
+			PROFIT = #{PROFIT},
+			SALE_TIME = #{SALE_TIME},
+			STATUS = #{STATUS},
+			PAY_TYPE = #{PAY_TYPE},
+			PAY_CARD_NO = #{PAY_CARD_NO}
+		where 
+		ID = #{ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="listCount" parameterType="page" resultType="pd">
+		SELECT
+			SUM(PROFIT) PROFIT,
+			SUM(TAKYUBIN_FEE) TAKYUBIN_FEE,
+			SUM(TAKYUBIN_FEE)+SUM(COST) ALL_COST,
+			SUM(SALE_COUNT) SALE_COUNT,
+			SUM(COST) COST
+		FROM
+		(
+			SELECT
+				A.ID,
+				CASE WHEN A.PROFIT IS NULL THEN 0 ELSE A.PROFIT END PROFIT,
+				CASE WHEN A.TAKYUBIN_FEE IS NULL THEN 0 ELSE A.TAKYUBIN_FEE END TAKYUBIN_FEE,
+				SUM(B.PRICE*B.GOODS_NUM) SALE_COUNT,
+				SUM(B.PURCHACE_PRICE*B.GOODS_NUM) COST
+			FROM
+			(
+				SELECT ID,TAKYUBIN_FEE,SUM(PROFIT) PROFIT
+				FROM T_ORDER
+				WHERE 1=1
+					<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+						and
+							(
+								TO_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+								 or 
+								STAFF LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+							)
+					</if>
+					<if test="pd.lastEnd!= null and pd.lastEnd != ''"><!-- 关键词检索 -->
+						and DATE_FORMAT( SALE_TIME, '%Y-%m-%d') &lt;= #{pd.lastEnd}
+					</if>
+					<if test="pd.lastStart!= null and pd.lastStart != ''"><!-- 关键词检索 -->
+						and DATE_FORMAT( SALE_TIME, '%Y-%m-%d') &gt;= #{pd.lastStart}
+					</if>
+					<if test="pd.PAY_TYPE!= null and pd.PAY_TYPE != ''"><!-- 关键词检索 -->
+						and PAY_TYPE = #{pd.PAY_TYPE}
+					</if>
+					and STATUS='0'
+				GROUP BY ID,TAKYUBIN_FEE
+			) A 
+			INNER JOIN T_ORDER_DETAILS B
+			ON A.ID = B.ORDER_ID
+			<if test="pd.checkbox1 != '' or pd.checkbox2 != '' or pd.checkbox3 != ''"><!-- 关键词检索 -->
+				and B.TYPE IN (#{pd.checkbox1},#{pd.checkbox2},#{pd.checkbox3})
+			</if>
+			GROUP BY A.ID,A.PROFIT,A.TAKYUBIN_FEE
+		) C
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			A.ID,	
+			A.TO_ID,	
+			A.TO_NAME,	
+			A.TO_MOBILE,	
+			A.TO_WECHAT,	
+			A.TO_QQ,	
+			A.TO_ADDRESS,	
+			A.TAKYUBIN_FEE,	
+			A.PROFIT,	
+			A.STAFF,	
+			A.SALE_TIME,	
+			A.SHOP_ID,	
+			A.SHOP_NAME,	
+			A.STATUS,	
+			A.PAY_TYPE,	
+			A.PAY_CARD_NO,	
+			A.CREATE_TIME,	
+			A.MODIFY_TIME,	
+			A.CREATER,	
+			A.UPDATER
+		from 
+		<include refid="tableName"></include> A
+		<if test="pd.checkbox1 != '' or pd.checkbox2 != '' or pd.checkbox3 != ''"><!-- 关键词检索 -->
+			INNER JOIN T_ORDER_DETAILS B ON A.ID = B.ORDER_ID
+		</if>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					A.TO_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					A.STAFF LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				)
+		</if>
+		<if test="pd.lastEnd!= null and pd.lastEnd != ''"><!-- 关键词检索 -->
+			and DATE_FORMAT( A.SALE_TIME, '%Y-%m-%d') &lt;= #{pd.lastEnd}
+		</if>
+		<if test="pd.lastStart!= null and pd.lastStart != ''"><!-- 关键词检索 -->
+			and DATE_FORMAT( A.SALE_TIME, '%Y-%m-%d') &gt;= #{pd.lastStart}
+		</if>
+		<if test="pd.STATUS!= null and pd.STATUS != ''"><!-- 关键词检索 -->
+			and A.STATUS = #{pd.STATUS}
+		</if>
+		<if test="pd.PAY_TYPE!= null and pd.PAY_TYPE != ''"><!-- 关键词检索 -->
+			and A.PAY_TYPE = #{pd.PAY_TYPE}
+		</if>
+		<if test="pd.checkbox1 != '' or pd.checkbox2 != '' or pd.checkbox3 != ''"><!-- 关键词检索 -->
+			and B.TYPE IN (#{pd.checkbox1},#{pd.checkbox2},#{pd.checkbox3})
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

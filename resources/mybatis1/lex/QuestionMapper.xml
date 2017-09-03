@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="QuestionMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		lex_question
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		user_id,	
+		question_title,	
+		hy_label,	
+		fx_label,	
+		zn_label,	
+		jn_label,	
+		question_price,	
+		spread,	
+		question_state,	
+		create_time,	
+		update_time,
+		question_type,
+		expire_text,
+		expire_time,
+		question_id
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{user_id},	
+		#{question_title},	
+		#{hy_label},	
+		#{fx_label},	
+		#{zn_label},	
+		#{jn_label},	
+		#{question_price},	
+		#{spread},	
+		#{question_state},	
+		#{create_time},	
+		#{update_time},
+		#{question_type},
+		#{expire_text},
+		#{expire_time},
+		#{question_id}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			question_id = #{question_id}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set
+		user_id = #{user_id},
+		question_title = #{question_title},
+		hy_label = #{hy_label},
+		fx_label = #{fx_label},
+		zn_label = #{zn_label},
+		jn_label = #{jn_label},
+		question_price = #{question_price},
+		spread = #{spread},
+		question_state = #{question_state},
+		question_type= #{question_type},
+		expire_text = #{expire_text},
+		expire_time = #{expire_time},
+		update_time = #{update_time},
+		create_time = #{create_time},
+		question_id = question_id
+		where
+		question_id = #{question_id}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			question_id = #{question_id}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件
+					字段1 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					字段2 LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				-->
+				)
+		</if>
+	</select>
+
+	<!-- 列表 -->
+	<select id="appDatalistPage" parameterType="page"  resultType="pd">
+		select
+		a.user_id,
+		a.question_title,
+		a.hy_label,
+		a.fx_label,
+		a.zn_label,
+		a.jn_label,
+		a.question_price,
+		a.spread,
+		a.question_state,
+		a.create_time,
+		a.update_time,
+		a.question_id,
+		a.question_type,
+		a.expire_text,
+		a.expire_time,
+		b.user_id as answer_id
+		from
+		lex_question a
+		INNER JOIN
+		lex_question_contacts b on a.question_id = b.question_id
+		where
+		<if test="pd.question_type!= null and pd.question_type != ''">
+			a.question_type = #{pd.question_type},
+		</if>
+		<if test="pd.question_state!= null and pd.question_state != ''">
+			a.question_state = #{pd.question_state},
+		</if>
+		<if test="pd.question_user_id!= null and pd.question_user_id != ''">
+			a.user_id = #{pd.user_id},
+		</if>
+		<if test="pd.answer_user_id!= null and pd.answer_user_id != ''">
+			b.user_id = #{pd.user_id},
+		</if>
+		1=1
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			question_id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

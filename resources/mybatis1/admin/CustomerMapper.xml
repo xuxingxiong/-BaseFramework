@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CustomerMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		CUSTOMER
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		ID,	
+		USER_NAME,	
+		TYPE,
+		SHOP_ID,	
+		SHOP_NAME,	
+		WECHAT_ID,	
+		WECHAT_FOCUS_TIME,	
+		MOBILE_PHONE,	
+		TEL,	
+		AGE,	
+		SEX,
+		BIRTHDAY,	
+		ADDRESS,	
+		EMAIL,	
+		QQ,	
+		SKIN_COMENT,	
+		PHOTO,	
+		CARE_RATE,	
+		CREATE_TIME,	
+		MODIFY_TIME,	
+		CREATER,	
+		UPDATER
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ID},	
+		#{USER_NAME},	
+		#{TYPE},
+		#{SHOP_ID},	
+		#{SHOP_NAME},	
+		#{WECHAT_ID},	
+		#{WECHAT_FOCUS_TIME},	
+		#{MOBILE_PHONE},	
+		#{TEL},	
+		#{AGE},	
+		#{SEX},	
+		#{BIRTHDAY},
+		#{ADDRESS},	
+		#{EMAIL},	
+		#{QQ},	
+		#{SKIN_COMENT},	
+		#{PHOTO},	
+		#{CARE_RATE},	
+		#{CREATE_TIME},	
+		#{MODIFY_TIME},	
+		#{CREATER},	
+		#{UPDATER}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			USER_NAME = #{USER_NAME},
+			TYPE = #{TYPE},
+			WECHAT_ID = #{WECHAT_ID},
+			WECHAT_FOCUS_TIME = #{WECHAT_FOCUS_TIME},
+			MOBILE_PHONE = #{MOBILE_PHONE},
+			TEL = #{TEL},
+			AGE = #{AGE},
+			SEX = #{SEX},
+			BIRTHDAY = #{BIRTHDAY},
+			ADDRESS = #{ADDRESS},
+			EMAIL = #{EMAIL},
+			QQ = #{QQ},
+			SKIN_COMENT = #{SKIN_COMENT},
+			PHOTO = #{PHOTO},
+			CARE_RATE = #{CARE_RATE},
+			MODIFY_TIME = #{MODIFY_TIME},
+			UPDATER = #{UPDATER}
+		where 
+		ID = #{ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+			ID,	
+			USER_NAME,	
+			TYPE,
+			SHOP_ID,	
+			SHOP_NAME,	
+			WECHAT_ID,	
+			WECHAT_FOCUS_TIME,	
+			MOBILE_PHONE,	
+			TEL,	
+			AGE,	
+			SEX,
+			DATE_FORMAT(BIRTHDAY,'%Y-%m-%d') BIRTHDAY,	
+			ADDRESS,	
+			EMAIL,	
+			QQ,	
+			SKIN_COMENT,	
+			PHOTO,	
+			CARE_RATE,	
+			CREATE_TIME,	
+			MODIFY_TIME,	
+			CREATER,	
+			UPDATER
+		from 
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			A.ID,	
+			A.USER_NAME,	
+			A.TYPE,
+			A.SHOP_ID,	
+			A.SHOP_NAME,	
+			A.WECHAT_ID,	
+			A.WECHAT_FOCUS_TIME,	
+			A.MOBILE_PHONE,	
+			A.TEL,	
+			A.AGE,	
+			A.SEX,
+			DATE_FORMAT(A.BIRTHDAY,'%Y-%m-%d') BIRTHDAY,	
+			A.ADDRESS,	
+			A.EMAIL,	
+			A.QQ,	
+			A.SKIN_COMENT,	
+			A.PHOTO,	
+			A.CARE_RATE,	
+			A.CREATE_TIME,	
+			A.MODIFY_TIME,	
+			A.CREATER,	
+			A.UPDATER,
+			B.CADR_NAME,
+			B.CARD_NO,
+			B.CARD_ID,
+			B.CUSTOMER_ID,
+			B.CHARGE,
+			B.SERVICE_CHAGE,
+			B.BUY_TIME,
+			B.BALANCE,
+			B.SERVICE_BALANCE,
+			B.END_TIME
+		from 
+		<include refid="tableName"></include> A
+		<choose>
+             <when test="pd.CARD_ID!= null and pd.CARD_ID != ''"> inner </when>
+             <otherwise> left </otherwise>
+        </choose>
+		join (
+			SELECT
+				A.CADR_NAME,
+				B.CARD_NO,
+				B.CARD_ID,
+				B.CUSTOMER_ID,
+				B.CHARGE,
+				B.SERVICE_CHAGE,
+				B.BUY_TIME,
+				B.BALANCE,
+				B.SERVICE_BALANCE,
+				B.END_TIME
+			FROM M_CARD A
+			inner join T_CUSTOMER_CARD B on A.ID = B.CARD_ID
+			where 1=1
+			<if test="pd.CARD_ID!= null and pd.CARD_ID != ''"><!-- 关键词检索 -->
+				and A.ID = #{pd.CARD_ID}
+			</if>
+		) B on A.ID = B.CUSTOMER_ID
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and A.ID = #{pd.ID}
+		</if>
+		<if test="pd.TYPE!= null and pd.TYPE != ''">
+			and A.TYPE = #{pd.TYPE}
+		</if>
+		<if test="pd.MOBILE_PHONE!= null and pd.MOBILE_PHONE != ''">
+			and A.MOBILE_PHONE = #{pd.MOBILE_PHONE}
+		</if>
+		<if test="pd.USER_NAME!= null and pd.USER_NAME != ''">
+			and A.USER_NAME LIKE CONCAT(CONCAT('%', #{pd.USER_NAME}),'%')
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>
