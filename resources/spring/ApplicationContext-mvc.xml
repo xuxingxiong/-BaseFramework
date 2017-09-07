@@ -17,10 +17,8 @@
 	<mvc:default-servlet-handler/>
 	
 	<context:component-scan base-package="com.fh.controller" />
-	<context:component-scan base-package="com.lex.controller" />
 	<context:component-scan base-package="com.web.controller" />
 	<context:component-scan base-package="com.admin.controller" />
-	<context:component-scan base-package="com.weixin.controller" />
 	<context:component-scan base-package="com.json" />
 
 	<!-- 对静态资源文件的访问  restful-->     
@@ -35,15 +33,6 @@
 			<mvc:mapping path="/**/**"/>
 			<bean class="com.fh.interceptor.LoginHandlerInterceptor"/>
 		</mvc:interceptor>
-		<mvc:interceptor>
-			<mvc:mapping path="/app/**"/>
-			<mvc:exclude-mapping path="/app/user/login"/>
-			<mvc:exclude-mapping path="/app/user/register"/>
-			<mvc:exclude-mapping path="/app/user/forgetPassReset"/>
-			<mvc:exclude-mapping path="/app/sms/send"/>
-			<mvc:exclude-mapping path="/app/sms/forgetPass"/>
-			<bean class="com.lex.interceptor.CheckUserInterceptor"/>
-		</mvc:interceptor>
 	</mvc:interceptors>
 	 
 	<!-- 配置SpringMVC的视图解析器 -->
@@ -53,47 +42,4 @@
 	</bean>
 	
 	<bean id="exceptionResolver" class="com.fh.resolver.MyExceptionResolver"></bean>
-	
-	<!-- 上传拦截，如最大上传值及最小上传值 -->
-	  <bean id="multipartResolver"   class="com.fh.interceptor.CommonsMultipartResolver" >   
-		  <property name="maxUploadSize">    
-	          <value>104857600</value>    
-	       </property>   
-	        <property name="maxInMemorySize">    
-	            <value>4096</value>    
-	        </property>   
-	         <property name="defaultEncoding">    
-	            <value>utf-8</value>    
-	        </property> 
-    </bean>  
-	
-	<!-- 定时执行 -->
-	<bean name="fans" class="com.common.util.timer.RemindTimerUtil"></bean> 
-	<bean id="fansJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
-        <property name="targetObject">  
-            <ref bean="fans" />  
-        </property>  
-        <property name="targetMethod">  
-            <value>UpdateRemind</value>  
-        </property>  
-    </bean>  
-    <!-- 配置触发器 -->  
-    <bean id="fansTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
-        <!-- 这里不可以直接在属性jobDetail中引用taskJob，因为他要求的是一个jobDetail类型的对象，所以我们得通过MethodInvokingJobDetailFactoryBean来转一下 -->  
-        <property name="jobDetail">  
-            <ref bean="fansJobDetail" />  
-        </property>  
-        <!-- 每天的8点到21点每隔1分钟触发-->  
-        <property name="cronExpression">  
-            <value>0 * 08-21 * * ?</value>  
-        </property>  
-    </bean>  
-    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
-        <!-- 添加触发器 -->  
-        <property name="triggers">  
-            <list>  
-                <ref bean="fansTrigger" />  
-            </list>  
-        </property>  
-    </bean>
 </beans>

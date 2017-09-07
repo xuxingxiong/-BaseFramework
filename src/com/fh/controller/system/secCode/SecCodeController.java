@@ -22,11 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fh.util.Const;
 
-/** 
+/**
  * 类名称：登录验证码
- * 类描述： 
- * 作者单位： FHqq313596790
- * 联系方式：
+ * 
  * @version
  */
 @Controller
@@ -34,14 +32,14 @@ import com.fh.util.Const;
 public class SecCodeController {
 
 	@RequestMapping
-	public void generate(HttpServletResponse response){
+	public void generate(HttpServletResponse response) {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		String code = drawImg(output);
-		
-		Subject currentUser = SecurityUtils.getSubject();  
+
+		Subject currentUser = SecurityUtils.getSubject();
 		Session session = currentUser.getSession();
 		session.setAttribute(Const.SESSION_SECURITY_CODE, code);
-		
+
 		try {
 			ServletOutputStream out = response.getOutputStream();
 			output.writeTo(out);
@@ -49,21 +47,21 @@ public class SecCodeController {
 			e.printStackTrace();
 		}
 	}
-	
-	private String drawImg(ByteArrayOutputStream output){
+
+	private String drawImg(ByteArrayOutputStream output) {
 		String code = "";
-		for(int i=0; i<4; i++){
+		for (int i = 0; i < 4; i++) {
 			code += randomChar();
 		}
 		int width = 70;
 		int height = 25;
-		BufferedImage bi = new BufferedImage(width,height,BufferedImage.TYPE_3BYTE_BGR);
-		Font font = new Font("Times New Roman",Font.PLAIN,20);
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		Font font = new Font("Times New Roman", Font.PLAIN, 20);
 		Graphics2D g = bi.createGraphics();
 		g.setFont(font);
-		Color color = new Color(66,2,82);
+		Color color = new Color(66, 2, 82);
 		g.setColor(color);
-		g.setBackground(new Color(226,226,240));
+		g.setBackground(new Color(226, 226, 240));
 		g.clearRect(0, 0, width, height);
 		FontRenderContext context = g.getFontRenderContext();
 		Rectangle2D bounds = font.getStringBounds(code, context);
@@ -71,7 +69,7 @@ public class SecCodeController {
 		double y = (height - bounds.getHeight()) / 2;
 		double ascent = bounds.getY();
 		double baseY = y - ascent;
-		g.drawString(code, (int)x, (int)baseY);
+		g.drawString(code, (int) x, (int) baseY);
 		g.dispose();
 		try {
 			ImageIO.write(bi, "jpg", output);
@@ -80,8 +78,8 @@ public class SecCodeController {
 		}
 		return code;
 	}
-	
-	private char randomChar(){
+
+	private char randomChar() {
 		Random r = new Random();
 		String s = "ABCDEFGHJKLMNPRSTUVWXYZ0123456789";
 		return s.charAt(r.nextInt(s.length()));

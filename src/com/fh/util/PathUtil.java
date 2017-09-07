@@ -39,7 +39,7 @@ public class PathUtil {
 	 * @return
 	 */
 	public static String getPicturePath() {
-		return "F:/beautySys/uploadFiles/uploadImgs/";
+		return "C:/img/uploadFiles/uploadImgs/";
 //		String os = System.getProperty("os.name");  
 //		if(os.toLowerCase().startsWith("win")){
 //			return ps.getProperty("imgPath_Windows");

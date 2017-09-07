@@ -9,7 +9,6 @@ import com.fh.util.PageData;
  *
  */
 public class PageDataUtil {
-
 	/**
 	 * 移除PageData空白项
 	 * 
@@ -17,13 +16,13 @@ public class PageDataUtil {
 	 * @return
 	 */
 	public static PageData removeEmpty(PageData pd) {
-		PageData temp = new PageData();
+		PageData pageData = new PageData();
 		for (Object key : pd.keySet()) {
-			if (pd.get(key) != null && !"".equals((String.valueOf(pd.get(key)).trim()))) {
-				temp.put(key, pd.get(key));
+			Object value = pd.get(key);
+			if (value != null && !"".equals(String.valueOf(value).trim())) {
+				pageData.put(key, value);
 			}
 		}
-		return temp;
+		return pageData;
 	}
-
 }

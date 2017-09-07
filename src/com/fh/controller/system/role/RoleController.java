@@ -21,7 +21,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.fh.controller.base.BaseController;
 import com.fh.entity.system.Menu;
 import com.fh.entity.system.Role;
-import com.fh.service.system.appuser.AppuserManager;
 import com.fh.service.system.role.RoleManager;
 import com.fh.service.system.user.UserManager;
 import com.fh.service.system.menu.MenuManager;
@@ -47,8 +46,6 @@ public class RoleController extends BaseController {
 	private RoleManager roleService;
 	@Resource(name="userService")
 	private UserManager userService;
-	@Resource(name="appuserService")
-	private AppuserManager appuserService;
 	
 	/** 进入权限首页
 	 * @param 
@@ -197,8 +194,7 @@ public class RoleController extends BaseController {
 				errInfo = "false";											//下级有数据时，删除失败
 			}else{
 				List<PageData> userlist = userService.listAllUserByRoldId(pd);			//此角色下的用户
-				List<PageData> appuserlist = appuserService.listAllAppuserByRorlid(pd);	//此角色下的会员
-				if(userlist.size() > 0 || appuserlist.size() > 0){						//此角色已被使用就不能删除
+				if(userlist.size() > 0 ){						//此角色已被使用就不能删除
 					errInfo = "false2";
 				}else{
 				roleService.deleteRoleById(ROLE_ID);	//执行删除

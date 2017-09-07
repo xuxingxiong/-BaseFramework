@@ -44,9 +44,7 @@
 	           	/login_toLogin	 			= anon
 	           	/login_login                = anon
 	           	/app**/** 					= anon
-	           	/weixin/** 					= anon
 	           	/web/**                     = anon
-	           	/pay/**                     = anon
 	           	/**							= authc
 	           	/**/MP_verify_iz5PXpxj2zrJGVBv.txt   = anon
 	           	/adminLogin.jsp     			    = anon

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PurchaseOrderMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		T_PURCHASE_ORDER
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		ID,	
+		APPLY_DATE,
+		EMP_ID,	
+		EMP_NAME,	
+		DEPARTMENT,	
+		POST,	
+		APPLY_REASON,	
+		USE_REASON,	
+		BUDGET_AMOUNT,	
+		EXPECT_DELI_DATE,	
+		DELI_ADDRESS,	
+		MANAGER_CONFIRM,	
+		GENERAL_MGR_CFM,	
+		ESTI_AMOUNT,	
+		ESTI_DELI_DATE,	
+		PUR_DEPART_OPINION,	
+		OPERATOR,	
+		MATPUR_MGR_OPINION,	
+		CEN_GENE_MGR_CFM,	
+		IS_MATE_QUALITY,	
+		IS_MATE_DELI_DATE,	
+		ACCEPT_COM_SCORE,	
+		SCORE_REASON,	
+		RECEIVER,	
+		CREATE_TIME,	
+		MODIFY_TIME,	
+		CREATER,	
+		UPDATER
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{ID},	
+		#{APPLY_DATE},
+		#{EMP_ID},	
+		#{EMP_NAME},	
+		#{DEPARTMENT},	
+		#{POST},	
+		#{APPLY_REASON},	
+		#{USE_REASON},	
+		#{BUDGET_AMOUNT},	
+		#{EXPECT_DELI_DATE},	
+		#{DELI_ADDRESS},	
+		#{MANAGER_CONFIRM},	
+		#{GENERAL_MGR_CFM},	
+		#{ESTI_AMOUNT},	
+		#{ESTI_DELI_DATE},	
+		#{PUR_DEPART_OPINION},	
+		#{OPERATOR},	
+		#{MATPUR_MGR_OPINION},	
+		#{CEN_GENE_MGR_CFM},	
+		#{IS_MATE_QUALITY},	
+		#{IS_MATE_DELI_DATE},	
+		#{ACCEPT_COM_SCORE},	
+		#{SCORE_REASON},	
+		#{RECEIVER},	
+		#{CREATE_TIME},	
+		#{MODIFY_TIME},	
+		#{CREATER},	
+		#{UPDATER}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into 
+	<include refid="tableName"></include>
+		(
+	<include refid="Field"></include>
+		) values (
+	<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 新增明细-->
+	<insert id="saveDetails" parameterType="pd">
+		insert into 
+			T_PUR_DETAILS
+		(
+			PUR_ID,
+			PUR_SUB_ID,
+			MATE_NAME,
+			MATE_NUM,
+			CREATE_TIME,
+			MODIFY_TIME,
+			CREATER,
+			UPDATER					
+		) values (
+			#{PUR_ID},
+			#{PUR_SUB_ID},
+			#{MATE_NAME},
+			#{MATE_NUM},
+			#{CREATE_TIME},
+			#{MODIFY_TIME},
+			#{CREATER},
+			#{UPDATER}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</delete>
+	
+	<!-- 删除明细-->
+	<delete id="deleteDetails" parameterType="pd">
+		delete from
+			T_PUR_DETAILS
+		where 
+			PUR_ID = #{ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+		set 
+			ID = #{ID},
+			APPLY_DATE = #{APPLY_DATE},
+			EMP_ID = #{EMP_ID},
+			EMP_NAME = #{EMP_NAME},
+			DEPARTMENT = #{DEPARTMENT},
+			POST = #{POST},
+			APPLY_REASON = #{APPLY_REASON},
+			USE_REASON = #{USE_REASON},
+			BUDGET_AMOUNT = #{BUDGET_AMOUNT},
+			EXPECT_DELI_DATE = #{EXPECT_DELI_DATE},
+			DELI_ADDRESS = #{DELI_ADDRESS},
+			MANAGER_CONFIRM = #{MANAGER_CONFIRM},
+			GENERAL_MGR_CFM = #{GENERAL_MGR_CFM},
+			ESTI_AMOUNT = #{ESTI_AMOUNT},
+			ESTI_DELI_DATE = #{ESTI_DELI_DATE},
+			PUR_DEPART_OPINION = #{PUR_DEPART_OPINION},
+			OPERATOR = #{OPERATOR},
+			MATPUR_MGR_OPINION = #{MATPUR_MGR_OPINION},
+			CEN_GENE_MGR_CFM = #{CEN_GENE_MGR_CFM},
+			IS_MATE_QUALITY = #{IS_MATE_QUALITY},
+			IS_MATE_DELI_DATE = #{IS_MATE_DELI_DATE},
+			ACCEPT_COM_SCORE = #{ACCEPT_COM_SCORE},
+			SCORE_REASON = #{SCORE_REASON},
+			RECEIVER = #{RECEIVER},
+			CREATE_TIME = #{CREATE_TIME},
+			MODIFY_TIME = #{MODIFY_TIME},
+			CREATER = #{CREATER},
+			UPDATER = #{UPDATER}
+		where 
+		ID = #{ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		ID,	
+		APPLY_DATE,
+		EMP_ID,	
+		EMP_NAME,	
+		DEPARTMENT,	
+		POST,	
+		APPLY_REASON,	
+		USE_REASON,	
+		BUDGET_AMOUNT,	
+		DATE_FORMAT( EXPECT_DELI_DATE, '%Y-%m-%d') EXPECT_DELI_DATE,
+		DELI_ADDRESS,	
+		MANAGER_CONFIRM,	
+		GENERAL_MGR_CFM,	
+		ESTI_AMOUNT,	
+		DATE_FORMAT( ESTI_DELI_DATE, '%Y-%m-%d') ESTI_DELI_DATE,	
+		PUR_DEPART_OPINION,	
+		OPERATOR,	
+		MATPUR_MGR_OPINION,	
+		CEN_GENE_MGR_CFM,	
+		IS_MATE_QUALITY,	
+		IS_MATE_DELI_DATE,	
+		ACCEPT_COM_SCORE,	
+		SCORE_REASON,	
+		RECEIVER,	
+		CREATE_TIME,	
+		MODIFY_TIME,	
+		CREATER,	
+		UPDATER
+		from 
+		<include refid="tableName"></include>
+		where 
+			ID = #{ID}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findByIdDetails" parameterType="pd" resultType="pd">
+		select 
+			PUR_ID,
+			PUR_SUB_ID,
+			MATE_NAME,
+			MATE_NUM,
+			CREATE_TIME,
+			MODIFY_TIME,
+			CREATER,
+			UPDATER	
+		from 
+			T_PUR_DETAILS
+		where 
+			PUR_ID = #{ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+			ID,	
+			DATE_FORMAT( APPLY_DATE, '%Y-%m-%d') APPLY_DATE,
+			EMP_ID,	
+			EMP_NAME,	
+			DEPARTMENT,	
+			POST,
+			BUDGET_AMOUNT,	
+			DATE_FORMAT( EXPECT_DELI_DATE, '%Y-%m-%d') EXPECT_DELI_DATE,	
+			ESTI_AMOUNT,	
+			DATE_FORMAT( ESTI_DELI_DATE, '%Y-%m-%d') ESTI_DELI_DATE
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					EMP_ID LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					EMP_NAME LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					DEPARTMENT LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+					 or 
+					POST LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+				)
+		</if>
+		<if test="pd.lastEnd!= null and pd.lastEnd != ''"><!-- 关键词检索 -->
+			and DATE_FORMAT( APPLY_DATE, '%Y-%m-%d') &lt;= #{pd.lastEnd}
+		</if>
+		<if test="pd.lastStart!= null and pd.lastStart != ''"><!-- 关键词检索 -->
+			and DATE_FORMAT( APPLY_DATE, '%Y-%m-%d') &gt;= #{pd.lastStart}
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+			ID,	
+			DATE_FORMAT( APPLY_DATE, '%Y-%m-%d') APPLY_DATE,
+			EMP_ID,	
+			EMP_NAME,	
+			DEPARTMENT,	
+			POST,
+			BUDGET_AMOUNT,	
+			DATE_FORMAT( EXPECT_DELI_DATE, '%Y-%m-%d') EXPECT_DELI_DATE,	
+			ESTI_AMOUNT,	
+			DATE_FORMAT( ESTI_DELI_DATE, '%Y-%m-%d') ESTI_DELI_DATE
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="keywords!= null and keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+					EMP_ID LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+					 or 
+					EMP_NAME LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+					 or 
+					DEPARTMENT LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+					 or 
+					POST LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+				)
+		</if>
+		<if test="lastEnd!= null and lastEnd != ''"><!-- 关键词检索 -->
+			and DATE_FORMAT( APPLY_DATE, '%Y-%m-%d') &lt;= #{lastEnd}
+		</if>
+		<if test="lastStart!= null and lastStart != ''"><!-- 关键词检索 -->
+			and DATE_FORMAT( APPLY_DATE, '%Y-%m-%d') &gt;= #{lastStart}
+		</if>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAllDetails" parameterType="String">
+		delete from
+			T_PUR_DETAILS
+		where 
+			PUR_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+</mapper>

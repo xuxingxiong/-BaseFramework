@@ -30,7 +30,6 @@
 			<list>  
                  <!--<value>classpath:*.properties</value>-->
 				 <value>/WEB-INF/classes/dbconfig.properties</value>
-                 <value>/WEB-INF/classes/redis.properties</value>
             </list>
         </property>  
 	</bean>

@@ -8872,8 +8872,8 @@ select.form-control option.no-option {
   padding: 1px 0;
 }
 input[disabled] {
-  color: #848484 !important;
-  background-color: #eeeeee !important;
+  color: #848484;
+  background-color: #eeeeee;
 }
 input[disabled]:hover {
   border-color: #d5d5d5 !important;

@@ -73,9 +73,10 @@
 				id="loginForm">
 				<div class="control-group normal_text">
 					<h3>
-						<img src="static/login/logo.png" alt="Logo" />
+						采购单管理系统
+						<!--<img src="static/login/logo.png" alt="Logo" />-->
 					</h3>
-					<p style="margin-bottom: 0px;float:right">Amshine皮肤深层清洁护理中心</p>
+					<!--<p style="margin-bottom: 0px;float:right">Amshine皮肤深层清洁护理中心</p>-->
 				</div>
 				<div class="control-group">
 					<div class="controls">
@@ -118,14 +119,14 @@
 							<i><img style="margin-top: 2px;height:23px;" id="codeImg" alt="点击更换"
 								title="点击更换" src="" /></i>
 						</div>
-						<span class="pull-right" style="padding-right:3%;"><a href="javascript:quxiao();" class="btn btn-success">取消</a></span>
+						<span class="pull-right"><a href="javascript:quxiao();" class="btn btn-success">取消</a></span>
 						<span class="pull-right"><a onclick="severCheck();" class="flip-link btn btn-info" id="to-recover">登录</a></span>
 					</div>
 				</div>
 			</form>
 			<div class="controls">
 				<div class="main_input_box">
-					<font color="white"><span id="nameerr">YaSaiKun 2017</span></font>
+					<font color="white"><span id="nameerr"></span></font>
 				</div>
 			</div>
 		</div>
